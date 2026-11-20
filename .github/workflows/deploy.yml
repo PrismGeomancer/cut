@@ -1,0 +1,43 @@
+name: deploy
+on:
+  push: { branches: [main] }
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          # Demo mode (sample data, labelled on every page) unless the repo variable PREVIEW_MODE is 0.
+          VITE_PREVIEW: ${{ vars.PREVIEW_MODE != '0' && '1' || '' }}
+          VITE_DATA_BASE_URL: ${{ vars.DATA_BASE_URL || format('https://raw.githubusercontent.com/{0}/data', github.repository) }}
+          VITE_CONTRACT_ADDRESS: ${{ vars.CONTRACT_ADDRESS }}
+          VITE_X_URL: ${{ vars.X_URL }}
+          VITE_TELEGRAM_URL: ${{ vars.TELEGRAM_URL }}
+          VITE_REPO_URL: ${{ vars.REPO_URL }}
+          VITE_CHART_URL: ${{ vars.CHART_URL }}
+          VITE_TREASURY_WALLET: ${{ vars.TREASURY_WALLET }}
+          VITE_REFERENCE_KEY: ${{ vars.REFERENCE_KEY }}
+          VITE_RPC_URL: ${{ vars.RPC_URL }}
+          VITE_TIKTOK_AUTH_WORKER_URL: ${{ vars.TIKTOK_AUTH_WORKER_URL }}
+          VITE_LIVE_CATEGORY: ${{ vars.LIVE_CATEGORY }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.d.outputs.page_url }}' }
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

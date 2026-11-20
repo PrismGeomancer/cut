@@ -1,0 +1,43 @@
+{
+  "name": "cut",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "e2e": "npm run build && VITE_DATA_BASE_URL=https://fixture.test/data vite build --outDir dist-fx && playwright test",
+    "copy:ffmpeg": "node scripts/copy-ffmpeg.mjs",
+    "postinstall": "node scripts/copy-ffmpeg.mjs",
+    "fetch:content": "tsx scripts/fetch-content.mjs",
+    "validate:feed": "tsx scripts/validate-feed.mjs",
+    "pay:cashback": "tsx scripts/pay-cashback.mjs",
+    "logo": "node scripts/make-logo.mjs",
+    "preview:data": "tsx scripts/make-preview.mjs",
+    "dev:preview": "VITE_PREVIEW=1 vite --port 5390 --strictPort",
+    "build:preview": "VITE_PREVIEW=1 vite build --outDir dist-preview",
+    "preview:real": "node scripts/make-preview-real.mjs",
+    "fetch:local": "OUT_DIR=public/live-data node --env-file=.env.local scripts/fetch-content.mjs",
+    "dev:live": "VITE_DATA_BASE_URL=/live-data vite --port 5393 --strictPort"
+  },
+  "dependencies": {
+    "@ffmpeg/core": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@solana/web3.js": "^1.99.0",
+    "gsap": "^3.15.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.6",
+    "vitest": "^4.1.12"
+  }
+}

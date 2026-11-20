@@ -1,0 +1,7 @@
+name = "cut-tiktok-auth"
+main = "tiktok-auth.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+SITE_URL = ""   # e.g. https://you.github.io/cut/
+# secrets: wrangler secret put TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET / SESSION_SECRET

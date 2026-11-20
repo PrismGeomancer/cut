@@ -1,0 +1,12 @@
+node_modules
+dist
+public/ffmpeg
+test-results
+playwright-report
+.DS_Store
+.wrangler
+dist-fx
+dist-preview
+.env.local
+public/live-data
+clips

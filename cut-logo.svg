@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="CUT">
+  <title>CUT</title>
+  <defs>
+    <clipPath id="cut-a"><polygon points="0,0 512,0 0,512"/></clipPath>
+    <clipPath id="cut-b"><polygon points="512,0 512,512 0,512"/></clipPath>
+  </defs>
+  <circle cx="256" cy="256" r="256" fill="#14171A"/>
+  <!-- one clip, cut on the diagonal; the halves slip apart along the cut -->
+  <g transform="translate(-4 -12) translate(30 -30)">
+    <rect x="116" y="116" width="280" height="280" rx="34" fill="#E5352B" clip-path="url(#cut-a)"/>
+  </g>
+  <g transform="translate(4 12) translate(-30 30)">
+    <rect x="116" y="116" width="280" height="280" rx="34" fill="#EDE6D8" clip-path="url(#cut-b)"/>
+  </g>
+</svg>

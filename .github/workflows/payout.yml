@@ -1,0 +1,39 @@
+name: payout
+# Cashback payouts. DRY RUN unless the repository variable PAYOUT_LIVE is "true".
+# Kill switch: set {"paused": true} in paused.json on the data branch.
+on:
+  schedule:
+    - cron: '15 */3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: data-branch, cancel-in-progress: false }
+jobs:
+  pay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out the data branch
+        run: |
+          git fetch origin data:data
+          git worktree add data-out data
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --ignore-scripts
+      - run: npx tsx scripts/pay-cashback.mjs
+        env:
+          OUT_DIR: data-out
+          PAYOUT_LIVE: ${{ vars.PAYOUT_LIVE }}
+          RPC_URL: ${{ secrets.RPC_URL || vars.RPC_URL }}
+          REFERENCE_KEY: ${{ vars.REFERENCE_KEY }}
+          TREASURY_WALLET: ${{ vars.TREASURY_WALLET }}
+          TREASURY_SECRET_KEY: ${{ secrets.TREASURY_SECRET_KEY }}
+      - name: Commit the ledger
+        working-directory: data-out
+        run: |
+          git config user.name "cut-data"
+          git config user.email "cut-data@users.noreply.github.com"
+          git add cashback.json
+          git diff --cached --quiet || git commit -m "cashback $(date -u +%FT%TZ)"
+          git push origin data

@@ -1,0 +1,45 @@
+name: content
+# live + history every 10 min, clips every 30 min, shorts every 60 min (one workflow, branch on the schedule).
+# GitHub's cron is best effort; the site shows "Updated {m} min ago" from generatedAt.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+    - cron: '5,35 * * * *'
+    - cron: '20 * * * *'
+  workflow_dispatch:
+    inputs:
+      only: { description: 'live,clips,shorts (empty = all)', required: false, default: '' }
+permissions:
+  contents: write
+concurrency: { group: data-branch, cancel-in-progress: false }
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out the data branch
+        run: |
+          git fetch origin data:data 2>/dev/null || true
+          if git show-ref --quiet refs/heads/data; then git worktree add data-out data; else git worktree add --orphan -b data data-out; fi
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node scripts/fetch-content.mjs
+        env:
+          OUT_DIR: data-out
+          SCHEDULE: ${{ github.event.schedule }}
+          ONLY: ${{ github.event.inputs.only }}
+          LIVE_CATEGORY: ${{ vars.LIVE_CATEGORY }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          KICK_CLIENT_ID: ${{ secrets.KICK_CLIENT_ID }}
+          KICK_CLIENT_SECRET: ${{ secrets.KICK_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      - name: Commit
+        working-directory: data-out
+        run: |
+          git config user.name "cut-data"
+          git config user.email "cut-data@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "data $(date -u +%FT%TZ)"
+          git push origin data
