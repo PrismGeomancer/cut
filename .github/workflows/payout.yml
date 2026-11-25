@@ -10,6 +10,8 @@ permissions:
 concurrency: { group: data-branch, cancel-in-progress: false }
 jobs:
   pay:
+    # Skipped until the treasury is configured (repository variable TREASURY_WALLET).
+    if: ${{ vars.TREASURY_WALLET != '' && vars.REFERENCE_KEY != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
