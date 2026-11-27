@@ -3,7 +3,7 @@ import { PREVIEW, PREVIEW_BASE, PREVIEW_TREASURY, PREVIEW_REFERENCE } from './pr
 // Every empty value hides whatever needs it (button, link, strip, line of copy).
 // Edit the defaults here, or set VITE_<NAME> at build time (deploy.yml passes repository variables).
 const DEFAULTS = {
-  CONTRACT_ADDRESS: '', X_URL: '', TELEGRAM_URL: '', REPO_URL: '', CHART_URL: '',
+  CONTRACT_ADDRESS: '', X_URL: 'https://x.com/CUT_editor_', TELEGRAM_URL: '', REPO_URL: '', CHART_URL: '',
   TREASURY_WALLET: '', REFERENCE_KEY: '',
   RPC_URL: 'https://api.mainnet-beta.solana.com',
   TIKTOK_AUTH_WORKER_URL: '', DATA_BASE_URL: '',
