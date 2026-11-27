@@ -18,7 +18,7 @@ export async function render(root: HTMLElement, params: URLSearchParams) {
   let q = '', platform: PlatformFilter = 'all', sort: 'viewers' | 'new' = 'viewers';
 
   mount(root, html`
-    <header class="page-head"><h1><span class="h-ico">${icon('radar', 26)}</span>Radar</h1><p>What's live and what's going round. Refreshes about every ten minutes.</p></header>
+    <header class="page-head"><h1><span class="h-ico">${icon('radar', 26)}</span>Radar</h1><p>What's live and what's going round.</p></header>
     <div class="tabs" role="tablist" aria-label="Radar lists">
       ${(['live', 'clips', 'shorts'] as Tab[]).map((t) => html`<button role="tab" type="button" id="tab-${t}" aria-controls="panel" aria-selected="${String(t === tab)}" data-tab="${t}">${icon({ live: 'live', clips: 'film', shorts: 'play' }[t], 16)}${{ live: 'Live now', clips: 'Top clips', shorts: 'Shorts' }[t]}</button>`)}
     </div>

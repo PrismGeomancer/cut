@@ -104,28 +104,18 @@ function footer() {
   document.querySelector('[data-top]')!.addEventListener('click', () => { scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' }); document.getElementById('main')!.focus({ preventScroll: true }); });
 }
 
-/** Loader: about 1.2 s, skippable, once per session, never with reduced motion. */
-function loader(): Promise<void> {
+/** The 5 s intro plays once per session, never with reduced motion or under automation. */
+function wantsIntro() {
   let seen = false;
   try { seen = sessionStorage.getItem('cut:loaded') === '1'; sessionStorage.setItem('cut:loaded', '1'); } catch { seen = true; }
-  if (seen || reducedMotion() || navigator.webdriver) return Promise.resolve();
-  return new Promise((resolve) => {
-    const el = document.createElement('div');
-    el.className = 'loader';
-    el.innerHTML = html`<div class="loader__in"><span class="loader__tc" aria-hidden="true">00:00:00:00</span><span class="loader__line">Rolling.</span></div><button class="btn btn--ghost btn--sm loader__skip" type="button">Skip</button>`.value;
-    document.body.append(el);
-    const tc = el.querySelector('.loader__tc')!;
-    const t0 = performance.now();
-    let done = false;
-    const finish = () => { if (done) return; done = true; el.remove(); resolve(); };
-    el.querySelector('button')!.addEventListener('click', finish);
-    const step = (now: number) => {
-      const f = Math.min(25, Math.floor(((now - t0) / 1000) * 25));
-      tc.textContent = f >= 25 ? '00:00:01:00' : `00:00:00:${String(f).padStart(2, '0')}`;
-      if (now - t0 < 1200 && !done) requestAnimationFrame(step); else setTimeout(finish, 80);
-    };
-    requestAnimationFrame(step);
-  });
+  return !seen && !reducedMotion() && !navigator.webdriver;
+}
+
+/** While the intro plays, fetch the first screen's code and data so the site is ready when the wipe starts. */
+function warm() {
+  (routes[parseHash().route] ?? routes[''])().catch(() => {});
+  import('./lib/live').then((m) => { m.loadLive(); m.loadHistory(); m.loadStreamers(); }).catch(() => {});
+  import('./lib/clips').then((m) => m.loadClips()).catch(() => {});
 }
 
 installImageFallback();
@@ -138,4 +128,4 @@ reconnectIfTrusted();
 document.querySelector('[data-skip]')!.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('main')!.focus(); });
 window.addEventListener('hashchange', navigate);
 addEventListener('offline', () => toast("You're offline. The editor still works."));
-loader().then(navigate);
+if (wantsIntro()) { warm(); import('./ui/intro').then((m) => m.playIntro()).then(navigate); } else navigate();

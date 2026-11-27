@@ -36,8 +36,7 @@ export function renderBar(el: HTMLElement) {
       </div>
     </nav>
   </div>
-  <div class="strip" data-strip hidden></div>
-  <div class="stalebar" data-stalebar hidden role="status"></div>`);
+  <div class="strip" data-strip hidden></div>`);
 
   // live clock as timecode (local time of day), updated once a second
   const clock = $('[data-clock]', el)!;
@@ -87,7 +86,7 @@ export function setActive(route: string) {
 }
 
 async function paintStrip(el: HTMLElement) {
-  const strip = $('[data-strip]', el)!, stale = $('[data-stalebar]', el)!;
+  const strip = $('[data-strip]', el)!;
   const [live, price] = await Promise.all([loadLive(), solPrice()]);
   const items: string[] = [];
   if (price !== null) items.push(html`<li>${icon('coin', 14)}<span class="k">SOL</span> <b class="num">${usd(price)}</b></li>`.value);
@@ -97,7 +96,6 @@ async function paintStrip(el: HTMLElement) {
     items.push(html`<li>${icon('eye', 14)}<b class="num">${compact(s.reduce((a, x) => a + x.viewers, 0))}</b> watching</li>`.value);
     const m = minutesAgo(ageOf(live));
     items.push(html`<li class="strip__age">${icon('clock', 14)}Updated ${m} min ago</li>`.value);
-    if (m > 30) { stale.hidden = false; stale.textContent = `The live list is ${m} min old. It refreshes about every ten minutes.`; }
   }
   if (items.length) { strip.innerHTML = `<ul>${items.join('')}</ul>`; strip.hidden = false; }
 }

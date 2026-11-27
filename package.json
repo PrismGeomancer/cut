@@ -8,7 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "e2e": "npm run build && VITE_DATA_BASE_URL=https://fixture.test/data vite build --outDir dist-fx && playwright test",
+    "e2e": "VITE_REFERENCE_KEY= VITE_TREASURY_WALLET= VITE_DATA_BASE_URL= VITE_PREVIEW= npm run build && VITE_REFERENCE_KEY= VITE_TREASURY_WALLET= VITE_DATA_BASE_URL= VITE_PREVIEW= VITE_DATA_BASE_URL=https://fixture.test/data vite build --outDir dist-fx && playwright test",
     "copy:ffmpeg": "node scripts/copy-ffmpeg.mjs",
     "postinstall": "node scripts/copy-ffmpeg.mjs",
     "fetch:content": "tsx scripts/fetch-content.mjs",
